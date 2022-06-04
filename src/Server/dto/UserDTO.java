@@ -1,6 +1,8 @@
-package server.dto;
+package Server.dto;
 
-public class UserDTO {
+import java.util.Vector;
+
+public class UserDTO extends Vector<UserDTO> {
     //테이블의 컬럼을 private으로 선언 후 getter/setter 메소드 세팅
     private int index;
     private String user_id;

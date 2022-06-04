@@ -1,12 +1,16 @@
-package server.dto;
+package Server.dto;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Database {
+
+    Connection con;
+
     public Database() {
-        Connection con = null;
+
+        con = null;
 
         String server = "192.168.56.1:3306"; // 서버 주소
         String user_name ="newuser"; //  접속자 id
@@ -23,6 +27,7 @@ public class Database {
         // 접속
         try {
             con = DriverManager.getConnection("jdbc:mysql://" + server + "/project_table", user_name, password);
+
             System.out.println("연결 완료!");
         } catch(SQLException e) {
             System.err.println("연결 오류" + e.getMessage());

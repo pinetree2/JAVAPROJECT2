@@ -1,10 +1,9 @@
-package server;
+package Server;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import server.User;
-import server.Room;
+
 public class TCPServer {
     public static final int PORT = 7777;
     Vector<User> Userlist;

@@ -1,10 +1,11 @@
-package server;
+package Server;
 import java.util.Vector;
 public class Room {
-    String title;
+    public String title;
     int count;
     Vector<User> u;
     public Room() {
         u = new Vector<>();
     }
+
 }
