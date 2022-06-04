@@ -15,7 +15,7 @@ public class Sub_CheckDAO {
     private static PreparedStatement pstmt;
     private ResultSet rs;
 
-    public static void Main_Check(int idx) {
+    public static void Sub_Check(int idx) {
 
 
         int Subindex = idx;

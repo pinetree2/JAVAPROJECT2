@@ -129,8 +129,11 @@ public class User extends Thread {
                     case "300": //메시지
                         break;
                     case "350": //초대
-                        //채텡방 내에 전체 메세지 보내주기
-                        //db에 추가만 해주기
+
+
+
+
+
 
                         break;
 
