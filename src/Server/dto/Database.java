@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class Database {
 
-    Connection con;
+    public Connection con;
 
     public Database() {
 

@@ -1,7 +1,5 @@
 package Server.dto;
 
-import Server.Main;
-
 import java.util.Date;
 
 public class MainToDoDTO {

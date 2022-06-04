@@ -1,6 +1,7 @@
-package Server.dto;
+package Server.dao;
 
-import Server.Main;
+import Server.dto.Database;
+import Server.dto.SubToDoDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,41 +9,44 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-
-public class MainToDoDAO {
+public class SubToDoDAO {
     static Database db = new Database();
     private static Connection connection= db.con;
     private PreparedStatement pstmt;
     private ResultSet rs;
 
 
-    public static void Maintododao(Main maintodo) throws SQLException {
-        MainToDoDTO mainToDoDTO;
-
-        String Mainindex; //메인 인덱스
-        String MainTask; //메인 태스크
-        Date MainDate; //메인 데드라인
-        int Chat_index; //메인에 해당하는 채팅방인덱스
-
+    public static void Subtododao(Sub subtodo) throws SQLException {
+        SubToDoDTO subToDoDTO;
+        String Subindex; //서브 인덱스
+        String SubTask; //서브 태스크
+        Date SubDate; //서브 데드라인
+        int Chat_index; //서브에 해당하는 채팅방인덱스
+        int SubNum; // 총 서브 태스크 개수 이거는 User 통합 코드에서 계산해서 전달받아야되는디요
 
         //sql
-        String sql = "INSERT INTO chatmainsub(M_idx,M_Task,Deadline,Chat_index) VALUE(?,?,?,?)";
+        String sql = "INSERT INTO chatmainsub(S_idx,Sub_Task,Sub_Deadline,Chat_index,SubNum) VALUE(?,?,?,?,?)";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         ResultSet rs = pstmt.executeQuery();
-        mainToDoDTO = new MainToDoDTO();
+        subToDoDTO = new SubToDoDTO();
 
         //불러와서 지정해주기
-        Mainindex = maintodo.mainindex;
-        MainTask = maintodo.maintask;
-        MainDate =maintodo.maindate;
-        Chat_index = maintodo.chat_index;
+        Subindex = subtodo.subindex;
+        SubTask = subtodo.subtask;
+        SubDate =subtodo.subdate;
+        Chat_index = subtodo.chat_index;
+        SubNum = subtodo.subnum;
+
+
+
 
         try{
             pstmt = connection.prepareStatement(sql);
-            pstmt.setString(1,Mainindex);
-            pstmt.setString(2,MainTask);
-            pstmt.setDate(3, (java.sql.Date) MainDate);
+            pstmt.setString(1,Subindex);
+            pstmt.setString(2,SubTask);
+            pstmt.setDate(3, (java.sql.Date) SubDate);
             pstmt.setInt(4,Chat_index);
+            pstmt.setInt(5,SubNum);
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -64,5 +68,4 @@ public class MainToDoDAO {
 
 
     }
-
 }

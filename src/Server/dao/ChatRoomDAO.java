@@ -1,6 +1,8 @@
-package Server.dto;
+package Server.dao;
 
 import Server.Room;
+import Server.dto.ChatRoomDTO;
+import Server.dto.Database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,6 +37,8 @@ public class ChatRoomDAO {
             chatRoomDTO.setRoomname(Roomname);
             chatRoomDTO.setNum_Members(1);
             count = pstmt.executeUpdate();//변경된 데이터 개수 리턴
+
+            //채팅방 인덱스 리턴하기
 
         } catch (SQLException e) {
             e.printStackTrace();

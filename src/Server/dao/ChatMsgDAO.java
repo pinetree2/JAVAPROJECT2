@@ -1,4 +1,4 @@
-package Server.dto;
+package Server.dao;
 
 public class ChatMsgDAO {
 }

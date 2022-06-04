@@ -1,4 +1,6 @@
-package Server.dto;
+package Server.dao;
+
+import Server.dto.Database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

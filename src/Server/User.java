@@ -1,8 +1,9 @@
 package Server;
 
 
-import Server.dto.ChatRoomDAO;
+import Server.dao.ChatRoomDAO;
 import Server.dto.Database;
+import Server.dao.LogOutDAO;
 
 import java.io.*;
 import java.net.*;
@@ -106,8 +107,15 @@ public class User extends Thread {
                         break;
                     case "350": //초대
                         break;
-                    case "400": //로그아웃
+
+
+                    case "400": //로그아웃 (유저 id를 받아와야할듯)
+                        String UserID = null;
+                        boolean status = false;
+                        LogOutDAO.logoutdao(UserID,status);
                         break;
+
+
                     case "450"://메인추가
                         break;
                         //클라이언트로부터 추가 요청 메시지 받음(인덱스,태스크,기한날짜,채팅방인덱스)
@@ -115,7 +123,7 @@ public class User extends Thread {
                     case "500" ://서브추가
                         break;
                     //클라로부터 추가 요청 메시지 받음 (서브 인덱스, 태스크, 기한날짜,채팅방인덱스)
-                    // 작업안에 서브 리스트의 갯수를 취합해서 추가해야함(subnum)
+                    // 이 작업안에 서브 리스트의 갯수를 취합해서 전달해야함(subnum)
 
 
 
