@@ -16,37 +16,31 @@ public class SubToDoDAO {
     private ResultSet rs;
 
 
-    public static void Subtododao(Sub subtodo) throws SQLException {
+    public static void Subtododao(int Mainindex, int Subindex, String SubTask, Date SubDate, int Chat_index, int SubNum) throws SQLException {
         SubToDoDTO subToDoDTO;
-        String Subindex; //서브 인덱스
-        String SubTask; //서브 태스크
-        Date SubDate; //서브 데드라인
-        int Chat_index; //서브에 해당하는 채팅방인덱스
-        int SubNum; // 총 서브 태스크 개수 이거는 User 통합 코드에서 계산해서 전달받아야되는디요
+        int Mainidx = Mainindex; //메인인덱스
+        int Subidx = Subindex; //서브 인덱스
+        String subTask = SubTask; //서브 태스크
+        Date subDate = SubDate; //서브 데드라인
+        int chat_index = Chat_index; //서브에 해당하는 채팅방인덱스
+        int subNum = SubNum; // 총 서브 태스크 개수 이거는 User 통합 코드에서 계산해서 전달받아야되는디요
 
         //sql
-        String sql = "INSERT INTO chatmainsub(S_idx,Sub_Task,Sub_Deadline,Chat_index,SubNum) VALUE(?,?,?,?,?)";
+        String sql = "INSERT INTO chatmainsub(M_idx,S_idx,Sub_Task,Sub_Deadline,Chat_index,SubNum) VALUE(?,?,?,?,?,?)";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         ResultSet rs = pstmt.executeQuery();
         subToDoDTO = new SubToDoDTO();
-
-        //불러와서 지정해주기
-        Subindex = subtodo.subindex;
-        SubTask = subtodo.subtask;
-        SubDate =subtodo.subdate;
-        Chat_index = subtodo.chat_index;
-        SubNum = subtodo.subnum;
-
 
 
 
         try{
             pstmt = connection.prepareStatement(sql);
-            pstmt.setString(1,Subindex);
-            pstmt.setString(2,SubTask);
-            pstmt.setDate(3, (java.sql.Date) SubDate);
-            pstmt.setInt(4,Chat_index);
-            pstmt.setInt(5,SubNum);
+            pstmt.setInt(1,Mainidx);
+            pstmt.setInt(2,Subidx);
+            pstmt.setString(3,subTask);
+            pstmt.setDate(4, (java.sql.Date) subDate);
+            pstmt.setInt(5,chat_index);
+            pstmt.setInt(6,subNum);
         }
         catch (SQLException e) {
             e.printStackTrace();

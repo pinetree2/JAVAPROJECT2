@@ -1,6 +1,5 @@
 package Server.dao;
 
-import Server.User;
 import Server.dto.Database;
 import Server.dto.LogOutDTO;
 
@@ -12,7 +11,7 @@ import java.sql.SQLException;
 import static java.lang.Boolean.FALSE;
 
 public class LogOutDAO {
-    private int user_;
+
 
     //쿼리문으로 인덱스에 해당하는 유저 id 찾아가지고 status변경하는 코드 짜야함.
 
@@ -20,10 +19,9 @@ public class LogOutDAO {
     private static Connection connection= db.con;
     private static PreparedStatement pstmt;
     private ResultSet rs;
-    String UserID;
-    Boolean status;
 
-    public static void logoutdao(String UserID, Boolean status){
+
+    public static void logoutdao(String UserID){
         LogOutDTO logOutDTO;
         logOutDTO = new LogOutDTO();
 
@@ -35,7 +33,6 @@ public class LogOutDAO {
 
             pstmt = connection.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
-            LogOutDTO.setStatus(status);
             LogOutDTO.setUser_id(UserID);
 
 
