@@ -1,21 +1,23 @@
 package Server;
 
-
 import Server.dao.ChatRoomDAO;
+
 import Server.dao.LogInDAO;
 import Server.dto.Database;
+import Server.dto.LogInDTO;
 import Server.dao.LogOutDAO;
 
 import java.io.*;
 import java.net.*;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static Server.dao.MainToDoDAO.Maintododao;
-
-
+import static Server.dao.SubToDoDAO.Subtododao;
+import static Server.dao.Main_CheckDAO.Main_Check;
+import static Server.dao.Sub_CheckDAO.Sub_Check;
+import static Server.dao.InviteUserDAO.InviteUser;
+import static Server.dao.ChatMsgDAO.chatmsg;
 public class User extends Thread {
 
     //Room myRoom; //채팅방
@@ -34,6 +36,7 @@ public class User extends Thread {
 
     Socket s;
     String id;
+    String nickname;
 
     public User(Socket s, TCPServer server){
 
@@ -56,6 +59,9 @@ public class User extends Thread {
             while (true) {
                 String msg = dis.readUTF();
                 if (msg == null) return;
+                if(msg.trim().length() > 0){
+                    System.out.println("from Client: "+ msg +":"+ s.getInetAddress().getHostAddress());
+                }
                 String[] msgs = msg.split("\\|");
                 String protocol = msgs[0];
 
@@ -64,23 +70,25 @@ public class User extends Thread {
                         Userlist.add(this);
                         MainUser.add(this);
                         id = msgs[1]; //("100|id")
-                        LogInDAO.logindao(id);
+                        LogInDAO.logindao(id); //status 변경
+                        nickname = LogInDTO.getUser_nick();
+                        System.out.println(this.nickname + "님이 로그인하셨습니다.");
                         break;
 
                     case "150": //새로운 방 만들기 -> db에 추가하는 과정 추가 필요
                         Room r = new Room();
                         r.RoomIdx = Integer.parseInt(msgs[1]);
-                        r.title = msgs[1];
+                        r.title = msgs[2];
                         r.count = 1;
                         Chatroom.add(r);
                         r.u.add(this);
                         myRoom.add(r);
 
                         ChatRoomDAO.chatroomdao(r);
+                        System.out.println(r.title + "채팅방이 새로 생성되었습니다.");
                         break;
                     case "200": //채팅방 입장하기
                         int ch = 0;
-
                         for (int i = 0; i < Chatroom.size(); i++) {
                             Room room = Chatroom.get(i);
                             if(Integer.parseInt(msgs[1]) == room.RoomIdx) {
@@ -88,6 +96,7 @@ public class User extends Thread {
                                 room.count++;
                                 room.u.add(this);
                                 ch++;
+                                System.out.println(this.id + "님이 [" + room.title + "]채팅방에 입장하셨습니다.");
                                 break;
                             }
 
@@ -100,9 +109,10 @@ public class User extends Thread {
                             Chatroom.add(room);
                             room.u.add(this);
                             myRoom.add(room);
+                            System.out.println(this.id + "님이 [" + room.title + "]채팅방에 입장하셨습니다.");
                         }
-
                         break;
+
                     case "250": ///채팅방 나가기 ("250|나가고자 하는 db 채팅방 인덱스")
                         for(int i = 0; i < Chatroom.size(); i++) { //채팅방의 유저리스트에서 사용자 삭제하기
                             Room room = Chatroom.get(i);
@@ -112,6 +122,7 @@ public class User extends Thread {
                                 if(room.count==0) {
                                     Chatroom.remove(room);
                                 }
+                                System.out.println(this.id + "님이 [" + room.title + "]채팅방에서 나가셨습니다.");
                                 break;
                             }
 
@@ -125,16 +136,22 @@ public class User extends Thread {
                         }
                         break;
 
+                    case "300": //채팅("300|채팅방 번호|메세지 내용") //유저로부터 메세지 받아서 채팅방 내의 모든 접속자한테 뿌리기, DB 저장
+                        String chat = "300|" + Integer.parseInt(msgs[1]) + "|" + this.id + "|" + msgs[2];
+                        for(int i = 0; i < myRoom.size(); i++) {
+                            if(myRoom.get(i).RoomIdx == Integer.parseInt(msgs[1])) {
+                                RoomMsg(myRoom.get(i), chat);
+                                chatmsg(Integer.parseInt(msgs[1]), this.nickname, msgs[2]); //db에 채팅 내용 저장하는 메소드
+                                break;
+                            }
+                        }//뿌릴 때 "300|채팅방 번호|보낸 사람 닉네임|메세지 내용"으로 보내줌. 클라이언트쪽에서 처리하는 코드 필요함.
 
-                    case "300": //메시지
                         break;
-                    case "350": //초대
-
-
-
-
-
-
+                    case "350": //초대 ("350|user_id|user_nick|chat_idx")
+                        //채팅방 내에 전체 메세지 보내주기
+                        InviteUser(msgs[1], Integer.parseInt(msgs[3]));
+                        List_update(msgs[1]);
+                        RoomMsg(msgs[2], "1000|" + this.nickname + "|" + msgs[2]);
                         break;
 
 
@@ -149,48 +166,94 @@ public class User extends Thread {
                         }
                         Userlist.remove(this);
                         MainUser.remove(this);
-                        String UserID = null;
                         id = msgs[1]; //("100|id")
                         LogOutDAO.logoutdao(id); //로그아웃 상태변경
-
+                        try {
+                            this.dis.close();
+                            this.dos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         break;
 
-
-                    case "450": //메인 투두리스트 추가 ("450|Main_idx|Main_task|chat_index")
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일");
-                        Date date = formatter.parse(msgs[3]);
-                        Maintododao(Integer.parseInt(msgs[1]), msgs[2], date, Integer.parseInt(msgs[4]));
-
-                        break;
-                        //클라이언트로부터 추가 요청 메시지 받음(인덱스,태스크,기한날짜,채팅방인덱스)
-
-                    case "500" ://서브추가
-                        break;
-                    //클라로부터 추가 요청 메시지 받음 (메인인덱스,서브 인덱스, 태스크, 기한날짜,채팅방인덱스)
-                    // 이 작업안에 서브 리스트의 갯수를 취합해서 전달해야함(subnum)
-                    case "550": // 완료
-                        //if문으로
+                    case "450": //메인 투두리스트 추가 ("450|인덱스태스크|기한날짜|채팅방인덱스")
+                        Maintododao(Integer.parseInt(msgs[1]), msgs[2], msgs[3], Integer.parseInt(msgs[4]));
+                        RoomMsg(msgs[4], "1000|메인 투두리스트 [" + msgs[1] + "]가 생성되었습니다."); //메인 생성 됐다고 알림주는 것.
                         break;
 
+                    case "500" ://서브 투두리스트 추가 (500|서브 인덱스|태스크|기한날짜|채팅방인덱스)
+                        Subtododao(Integer.parseInt(msgs[1]), Integer.parseInt(msgs[2]), msgs[3], msgs[4], Integer.parseInt(msgs[5]), Integer.parseInt(msgs[6]));
+                        break;
 
+                    case "550": // 매안태스크 완료 ("550|메인인덱스|채팅방인덱스|check")
+                        Main_Check(Integer.parseInt(msgs[1]), Integer.parseInt(msgs[2]), msgs[3]);
 
+                        break;
+                    case "600": //서브테스크 완료 ("600|서브인덱스|채팅방인덱스|메인인덱스")
+                        Sub_Check(Integer.parseInt(msgs[1]), Integer.parseInt(msgs[2]), Integer.parseInt(msgs[3]),msgs[4]);
+                        break;
 
+                    //서버에서 1000은 따로 받지는 않지만 메세지에서 서버 알림 같은 경우는 1000으로 보낼 예정이므로 클라에서는 1000을 받아서 메세지 받아주는 코드 필요함.
                 }
             }
         }catch(IOException e) {
             System.out.println("User class error");
             e.printStackTrace();
+            try {
+                dis.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
             e.printStackTrace();
         }
 
     }//run
     public void messageTo(String msg) throws IOException{
-        dos.write((msg+"\n").getBytes()); //수정 필요
+        dos.writeUTF((msg));
     }
-    public void messageRoom(String msg) {
+    public void RoomMsg(String Roomidx, String msg) {
+        for(int i = 0; i < myRoom.size(); i++) {
+            if(Integer.parseInt(Roomidx) == myRoom.get(i).RoomIdx) {
+                RoomMsg(myRoom.get(i), msg);
+                break;
+            }
+        }
 
+    }
+    public void RoomMsg(Room room, String msg) {
+        for(int i = 0; i < room.u.size(); i++) { //방에 참가한 모든 유저들에게 메세지 전송
+            User user = room.u.get(i);
+            try {
+                user.messageTo(msg);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    /*public void Main_msg(String msg) {
+       for(int i = 0; i < MainUser.size(); i++) {
+          User user = MainUser.get(i);
+          try {
+            user.messageTo(msg);
+         } catch (IOException e) {
+            MainUser.remove(i--);
+            e.printStackTrace();
+         }
+       }
+    }*/
+    public void List_update(String id) { //사람 초대했을 때, 그 사람이 접속 중이면 메인화면 새로고침하라고 눈치주는 코드
+        for(int i = 0; i < Userlist.size(); i++) {
+            if(Userlist.get(i).id == id) {
+                String msg = "350|" ; //이 코드 받으면 새로고침하면 됨
+                try {
+                    messageTo(msg);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
     }
 }

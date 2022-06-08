@@ -36,6 +36,7 @@ public class InviteUserDAO {
             ResultSet rs = pstmt.executeQuery();
             Memnum = rs.getInt("Num_Members");
             Memnum +=1;
+
             //그다음에 update로 +1 업데이트
             String sql1 = "UPDATE  chatroom SET Num_Members = "+Memnum+ "WHERE (chat_index REGEXP '^["+Chat_index+"]+$')";
             pstmt = connection.prepareStatement(sql1);
@@ -63,7 +64,10 @@ public class InviteUserDAO {
             pstmt.setString(2,User_id);
             pstmt.setString(3,RoomName);
 
-
+            InviteUserDTO.setUser_id(User_id);
+            InviteUserDTO.setChat_index(Chat_index);
+            InviteUserDTO.setRoomName(RoomName);
+            InviteUserDTO.setMemnum(Memnum);
 
 
         } catch (SQLException e) {

@@ -15,12 +15,18 @@ public class Main_CheckDAO {
     private static PreparedStatement pstmt;
     private ResultSet rs;
 
-    public static void Main_Check(int idx){
+    public static void Main_Check(int idx, int Chat_index,String check){
 
 
         int Mainindex =idx;
+        int Chatindex = Chat_index;
+        Boolean Check;
+        Check = Boolean.parseBoolean(check);
 
-        String sql = "UPDATE chatmainsub SET M_check = "+TRUE+"WHERE (M_idx REGEXP '^["+idx+"]+$')";
+        //채팅방 인덱스하고 메인인덱스
+        String sql = "UPDATE chatmainsub SET M_check ="+ Check +"WHERE (M_idx  REGEXP '^["+Mainindex+"]+$') AND (Chat_index REGEXP '^["+Chatindex+"]+$')";
+
+
         try {
 
             pstmt = connection.prepareStatement(sql);

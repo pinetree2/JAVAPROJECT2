@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SubToDoDAO {
@@ -16,12 +18,18 @@ public class SubToDoDAO {
     private ResultSet rs;
 
 
-    public static void Subtododao(int Mainindex, int Subindex, String SubTask, Date SubDate, int Chat_index, int SubNum) throws SQLException {
+    public static void Subtododao(int Mainindex, int Subindex, String SubTask, String SubDate, int Chat_index, int SubNum) throws SQLException {
         SubToDoDTO subToDoDTO;
         int Mainidx = Mainindex; //메인인덱스
         int Subidx = Subindex; //서브 인덱스
         String subTask = SubTask; //서브 태스크
-        Date subDate = SubDate; //서브 데드라인
+        Date subDate = null;
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일");
+        try {
+            subDate = formatter.parse(SubDate);
+        } catch (ParseException e1) {
+            e1.printStackTrace();
+        }
         int chat_index = Chat_index; //서브에 해당하는 채팅방인덱스
         int subNum = SubNum; // 총 서브 태스크 개수 이거는 User 통합 코드에서 계산해서 전달받아야되는디요
 

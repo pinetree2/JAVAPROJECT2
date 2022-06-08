@@ -15,12 +15,16 @@ public class Sub_CheckDAO {
     private static PreparedStatement pstmt;
     private ResultSet rs;
 
-    public static void Sub_Check(int idx) {
+    public static void Sub_Check(int idx,int Chat_index, int Main_index,String check) {
 
 
         int Subindex = idx;
+        int Mainindex = Main_index;
+        int Chatindex = Chat_index;
+        Boolean Check;
+        Check = Boolean.parseBoolean(check);
 
-        String sql = "UPDATE chatmainsub SET S_check = " + TRUE + "WHERE (S_idx REGEXP '^[" + idx + "]+$')";
+        String sql = "UPDATE chatmainsub SET S_check ="+ Check +"WHERE (M_idx  REGEXP '^["+ Mainindex+"]+$') AND (Chat_index REGEXP '^["+Chatindex+"]+$') AND (S_idx REGEXP '^["+Subindex+"]+$' )";
         try {
 
             pstmt = connection.prepareStatement(sql);
