@@ -32,11 +32,11 @@ public class LogInDAO {
         try {
 
             pstmt = connection.prepareStatement(sql);
-
             LogInDTO.setUser_id(UserID);
+            pstmt.executeUpdate();
+
             pstmt = connection.prepareStatement(sql2);
             ResultSet rs = pstmt.executeQuery();
-
             user_nick = rs.getString("user_nick");
             LogInDTO.setUser_nick(user_nick);
            
