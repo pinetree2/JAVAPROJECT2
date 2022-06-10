@@ -1,6 +1,7 @@
 package Server.dao;
 
 import Server.dto.Database;
+import Server.dto.Main_CheckDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,8 +16,9 @@ public class Main_CheckDAO {
     private static PreparedStatement pstmt;
     private ResultSet rs;
 
-    public static void Main_Check(int idx, int Chat_index,String check){
-
+    public static void Main_Check(int idx, int Chat_index, String check){
+        Main_CheckDTO main_checkDTO;
+        main_checkDTO = new Main_CheckDTO();
 
         int Mainindex =idx;
         int Chatindex = Chat_index;
@@ -27,10 +29,16 @@ public class Main_CheckDAO {
         String sql = "UPDATE chatmainsub SET M_check ="+ Check +"WHERE (M_idx  REGEXP '^["+Mainindex+"]+$') AND (Chat_index REGEXP '^["+Chatindex+"]+$')";
 
 
+
         try {
 
             pstmt = connection.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
+            pstmt.executeUpdate(sql);
+            Main_CheckDTO.setMainindex(Mainindex);
+            Main_CheckDTO.setChatindex(Chatindex);
+            Main_CheckDTO.setCheck(Check);
+
 
 
 

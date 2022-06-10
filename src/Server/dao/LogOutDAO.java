@@ -33,6 +33,8 @@ public class LogOutDAO {
 
             pstmt = connection.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
+            pstmt.executeUpdate(sql);
+
             LogOutDTO.setUser_id(UserID);
 
 

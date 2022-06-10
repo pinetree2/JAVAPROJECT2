@@ -33,6 +33,7 @@ public class ChatMsgDAO {
             pstmt.setInt(1,chatidx);
             pstmt.setString(2,Msgsender);
             pstmt.setString(3,msg);
+            pstmt.executeUpdate(sql);
 //            pstmt.setTime(4, Time.valueOf(msgtime)); //mysql 의 시간 형식지정자
 
         } catch (SQLException e) {

@@ -1,6 +1,7 @@
 package Server.dao;
 
 import Server.dto.Database;
+import Server.dto.Sub_CheckDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,6 +18,8 @@ public class Sub_CheckDAO {
 
     public static void Sub_Check(int idx,int Chat_index, int Main_index,String check) {
 
+        Sub_CheckDTO sub_checkDTO;
+        sub_checkDTO = new Sub_CheckDTO();
 
         int Subindex = idx;
         int Mainindex = Main_index;
@@ -29,7 +32,12 @@ public class Sub_CheckDAO {
 
             pstmt = connection.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
-
+            int result = pstmt.executeUpdate();
+            if(result == 1){
+                System.out.println("서브 check 값 변경완료");
+            }else {
+                System.out.println("서브 check 값 변경실패");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();

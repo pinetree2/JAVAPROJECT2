@@ -36,7 +36,7 @@ public class ChatRoomDAO {
             pstmt.setInt(2,1);
             chatRoomDTO.setRoomname(Roomname);
             chatRoomDTO.setNum_Members(1);
-            count = pstmt.executeUpdate();//변경된 데이터 개수 리턴
+            pstmt.executeUpdate(sql);
 
             //채팅방 인덱스 리턴하기
 

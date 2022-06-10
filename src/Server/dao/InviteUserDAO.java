@@ -40,13 +40,13 @@ public class InviteUserDAO {
             //그다음에 update로 +1 업데이트
             String sql1 = "UPDATE  chatroom SET Num_Members = "+Memnum+ "WHERE (chat_index REGEXP '^["+Chat_index+"]+$')";
             pstmt = connection.prepareStatement(sql1);
-
+            pstmt.executeUpdate(sql1);
             //채팅방 이름도 받아옴
             String sql2 = "SELECT RoomName FROM chatroom WHERE chat_index = "+Chat_index;
             pstmt = connection.prepareStatement(sql2);
             ResultSet rs2 = pstmt.executeQuery();
             RoomName = rs2.getString("RoomName");
-
+            pstmt.executeUpdate(sql2);
 
             //초대받은사람 id, 채팅방 인덱스를 받아오면 그 사람의 유저별채팅방에 채팅방 추가해주고
             String sql3 = "INSERT INTO userchatroominfo(Chat_index,ChatUser_id,ChatRoomName) VALUE(?,?,?)";
@@ -54,7 +54,7 @@ public class InviteUserDAO {
             pstmt.setInt(1,Chat_index);
             pstmt.setString(2,User_id);
             pstmt.setString(3,RoomName);
-
+            pstmt.executeUpdate(sql3);
 
 
             //채팅방별 유저에도 추가해줘야함
@@ -63,7 +63,7 @@ public class InviteUserDAO {
             pstmt.setInt(1,Chat_index);
             pstmt.setString(2,User_id);
             pstmt.setString(3,RoomName);
-
+            pstmt.executeUpdate(sql4);
             InviteUserDTO.setUser_id(User_id);
             InviteUserDTO.setChat_index(Chat_index);
             InviteUserDTO.setRoomName(RoomName);

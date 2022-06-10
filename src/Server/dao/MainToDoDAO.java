@@ -35,7 +35,7 @@ public class MainToDoDAO {
             e1.printStackTrace();
         }
         //sql
-        String sql = "INSERT INTO chatmainsub(M_idx,M_Task,Deadline,Chat_index) VALUE(?,?,?,?)";
+        String sql = "INSERT INTO chatmainsub(M_idx,M_Task,Deadline,Chat_index,S_idx) VALUE(?,?,?,?,?)";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         ResultSet rs = pstmt.executeQuery();
         mainToDoDTO = new MainToDoDTO();
@@ -51,12 +51,12 @@ public class MainToDoDAO {
             pstmt.setString(2,MainTask);
             pstmt.setDate(3, (java.sql.Date) MainDate);
             pstmt.setInt(4,Chat_index);
-
+            pstmt.setInt(5,0);
+            pstmt.executeUpdate(sql);
             MainNum = Mainindex;
             String sql2 = "UPDATE chatroom SET Main_Num ="+MainNum+"WHERE (chat_index REGEXP '^["+Chat_index+"]+$')";
             pstmt =connection.prepareStatement(sql2);
-
-
+            pstmt.executeUpdate(sql);
         }
         catch (SQLException e) {
             e.printStackTrace();

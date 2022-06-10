@@ -1,23 +1,23 @@
 package Server;
 
 import Server.dao.ChatRoomDAO;
-
 import Server.dao.LogInDAO;
+import Server.dao.LogOutDAO;
 import Server.dto.Database;
 import Server.dto.LogInDTO;
-import Server.dao.LogOutDAO;
 
 import java.io.*;
-import java.net.*;
+import java.net.Socket;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Vector;
 
-import static Server.dao.MainToDoDAO.Maintododao;
-import static Server.dao.SubToDoDAO.Subtododao;
-import static Server.dao.Main_CheckDAO.Main_Check;
-import static Server.dao.Sub_CheckDAO.Sub_Check;
-import static Server.dao.InviteUserDAO.InviteUser;
 import static Server.dao.ChatMsgDAO.chatmsg;
+import static Server.dao.DeleteTodoDAO.DeleteTodoDAO;
+import static Server.dao.InviteUserDAO.InviteUser;
+import static Server.dao.MainToDoDAO.Maintododao;
+import static Server.dao.Main_CheckDAO.Main_Check;
+import static Server.dao.SubToDoDAO.Subtododao;
+import static Server.dao.Sub_CheckDAO.Sub_Check;
 public class User extends Thread {
 
     //Room myRoom; //채팅방
@@ -181,7 +181,7 @@ public class User extends Thread {
                         RoomMsg(msgs[4], "1000|메인 투두리스트 [" + msgs[1] + "]가 생성되었습니다."); //메인 생성 됐다고 알림주는 것.
                         break;
 
-                    case "500" ://서브 투두리스트 추가 (500|서브 인덱스|태스크|기한날짜|채팅방인덱스)
+                    case "500" ://서브 투두리스트 추가 (500|메인인덱스|서브 인덱스|태스크|기한날짜|채팅방인덱스)
                         Subtododao(Integer.parseInt(msgs[1]), Integer.parseInt(msgs[2]), msgs[3], msgs[4], Integer.parseInt(msgs[5]), Integer.parseInt(msgs[6]));
                         break;
 
@@ -189,8 +189,13 @@ public class User extends Thread {
                         Main_Check(Integer.parseInt(msgs[1]), Integer.parseInt(msgs[2]), msgs[3]);
 
                         break;
-                    case "600": //서브테스크 완료 ("600|서브인덱스|채팅방인덱스|메인인덱스")
+                    case "600": //서브테스크 완료 ("600|서브인덱스|채팅방인덱스|메인인덱스|check")
                         Sub_Check(Integer.parseInt(msgs[1]), Integer.parseInt(msgs[2]), Integer.parseInt(msgs[3]),msgs[4]);
+                        break;
+
+
+                    case "700": //메인/서브 삭제 ("700|메인인덱스|서브인덱스")
+                        DeleteTodoDAO(Integer.parseInt(msgs[1]),Integer.parseInt(msgs[2]));
                         break;
 
                     //서버에서 1000은 따로 받지는 않지만 메세지에서 서버 알림 같은 경우는 1000으로 보낼 예정이므로 클라에서는 1000을 받아서 메세지 받아주는 코드 필요함.

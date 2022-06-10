@@ -27,16 +27,25 @@ public class LogInDAO {
 
         //user_id 행의 열 값중 user_id와 일치하는것을 찾고, 그것과 같은 행의 status값 변경
 
-        String sql = "UPDATE user_table SET status = " + TRUE + "WHERE user_id LIKE " + UserID;
-        String sql2 = "SELECT user_nick FROM user_table WHERE user_id LIKE " + UserID;
+        String sql = "UPDATE user_table SET status ? WHERE user_id LIKE ? ";
+        String sql2 = "SELECT user_nick FROM user_table WHERE user_id LIKE ?";
         try {
 
             pstmt = connection.prepareStatement(sql);
-            LogInDTO.setUser_id(UserID);
-            pstmt.executeUpdate();
+            pstmt.setBoolean(1,TRUE);
+            pstmt.setString(2,UserID);
+            logInDTO.setUser_id(UserID);
+            int result = pstmt.executeUpdate();
+            if(result == 1){
+                System.out.println("status 값 변경완료");
+            }else {
+                System.out.println("status 값 변경실패");
+            }
 
             pstmt = connection.prepareStatement(sql2);
+            pstmt.setString(1,UserID);
             ResultSet rs = pstmt.executeQuery();
+            pstmt.executeUpdate(sql2);
             user_nick = rs.getString("user_nick");
             LogInDTO.setUser_nick(user_nick);
            

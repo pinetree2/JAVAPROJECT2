@@ -49,6 +49,7 @@ public class SubToDoDAO {
             pstmt.setDate(4, (java.sql.Date) subDate);
             pstmt.setInt(5,chat_index);
             pstmt.setInt(6,subNum);
+            pstmt.executeUpdate(sql);
         }
         catch (SQLException e) {
             e.printStackTrace();
