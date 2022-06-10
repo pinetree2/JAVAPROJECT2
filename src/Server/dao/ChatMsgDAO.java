@@ -9,50 +9,61 @@ import java.time.LocalTime;
 public class ChatMsgDAO {
 
 
-    static Database db = new Database();
-    private static Connection connection= db.con;
-    private PreparedStatement pstmt;
-    private ResultSet rs;
+    public static void chatmsg(String RoomName, String nickname, String Msg) throws SQLException {
+        Connection con = null;
 
-    public static void chatmsg(int Chat_index, String Msg_sender, String Msg) throws SQLException {
+        String url = "127.0.0.1:3306"; // 서버 주소
+        String user_name = "newuser"; //  접속자 id
+        String password = "@123456789"; // 접속자 pw
+        PreparedStatement stmt = null;
+        // Statement statement = null;
+        ResultSet rs = null;
+
         ChatMsgDTO chatMsgDTO;
         chatMsgDTO = new ChatMsgDTO();
-        int chatidx = Chat_index;
-        String Msgsender = Msg_sender;
+        String roomname = RoomName;
+        String Nickname = nickname;
         String msg = Msg;
 //        LocalTime msgtime = MsgTime;
 
 
-        String sql = "INSERT INTO chatmsg(chat_index, msg_sender,msg) VALUE(?,?,?)";
-        PreparedStatement pstmt = connection.prepareStatement(sql);
-        ResultSet rs = pstmt.executeQuery();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://" + url + "/project_table?serverTimezone=UTC", user_name, password);
+            System.out.println("Connect Success!");
+            String sql = "INSERT INTO chatmsg(RoomName,userNick,msg) VALUE(?,?,?)";
 
-        try{
-
-            pstmt = connection.prepareStatement(sql);
-            pstmt.setInt(1,chatidx);
-            pstmt.setString(2,Msgsender);
-            pstmt.setString(3,msg);
-            pstmt.executeUpdate(sql);
+            stmt = con.prepareStatement(sql);
+            stmt.setString(1, roomname);
+            stmt.setString(2, Nickname);
+            stmt.setString(3, msg);
+            stmt.executeUpdate();
 //            pstmt.setTime(4, Time.valueOf(msgtime)); //mysql 의 시간 형식지정자
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            // DB close 필수!
-            // 접속이 된 것
-            try {
-                if(connection != null) {
-                    connection.close();
-                }
-                if(pstmt != null) {
-                    pstmt.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+        } catch (ClassNotFoundException e1) {
 
+            System.out.println("[JDBC Connector Driver 오류 : " + e1.getMessage() + "]");
+
+        } finally {
+
+            //사용순서와 반대로 close 함
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
-    }
 
+
+    }
 }

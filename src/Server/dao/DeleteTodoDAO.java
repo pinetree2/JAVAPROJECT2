@@ -3,46 +3,56 @@ package Server.dao;
 import Server.dto.Database;
 import Server.dto.DeleteTodoDTO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class DeleteTodoDAO {
-    static Database db = new Database();
-    private static Connection connection= db.con;
-    private static PreparedStatement pstmt;
-    private static ResultSet rs;
 
     public static void DeleteTodoDAO(int M_idx, int S_idx){
 
+        Connection con = null;
+
+        String url = "127.0.0.1:3306"; // 서버 주소
+        String user_name = "newuser"; //  접속자 id
+        String password = "@123456789"; // 접속자 pw
+        PreparedStatement stmt =null;
+        // Statement statement = null;
+        ResultSet rs = null;
+
+
+        DeleteTodoDTO DeleteTodoDTO = new DeleteTodoDTO();
         int m_idx = M_idx;
         int s_idx = S_idx;
 
         if(S_idx == 0){
             //메인인덱스에 해당하는거 다 지움
             // delete
-            String sql ="DELETE FROM chatmainsub WHERE M_idx = ?";
+
 
             try{
-                pstmt = connection.prepareStatement(sql);
-                pstmt.setInt(1,M_idx);
-                rs = pstmt.executeQuery();
-                pstmt.executeUpdate(sql);
-                DeleteTodoDTO.setM_idx(M_idx);
-                DeleteTodoDTO.setS_idx(S_idx);
 
-            } catch (SQLException e) {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                con = DriverManager.getConnection("jdbc:mysql://" + url + "/project_table?serverTimezone=UTC", user_name, password);
+                System.out.println("Connect Success!");
+
+                String sql ="DELETE FROM chatmainsub WHERE M_idx = ?";
+                stmt = con.prepareStatement(sql);
+                stmt.setInt(1,m_idx);
+                stmt.executeUpdate();
+
+                DeleteTodoDTO.setM_idx(m_idx);
+                DeleteTodoDTO.setS_idx(s_idx);
+
+            } catch (ClassNotFoundException|SQLException e) {
                 e.printStackTrace();
             }finally {
                 // DB close 필수!
                 // 접속이 된 것
                 try {
-                    if(connection != null) {
-                        connection.close();
+                    if(con != null) {
+                        con.close();
                     }
-                    if(pstmt != null) {
-                        pstmt.close();
+                    if(stmt != null) {
+                        stmt.close();
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -54,13 +64,13 @@ public class DeleteTodoDAO {
             //메인, 서브 인덱스에 둘 다 해당하는 task 지움
             String sql = "DELETE FROM chatmainsub WHERE M_idx = ? AND S_idx =?";
             try{
-                pstmt = connection.prepareStatement(sql);
-                pstmt.setInt(1,M_idx);
-                pstmt.setInt(2,S_idx);
-                rs = pstmt.executeQuery();
-                pstmt.executeUpdate(sql);
-                DeleteTodoDTO.setM_idx(M_idx);
-                DeleteTodoDTO.setS_idx(S_idx);
+                stmt = con.prepareStatement(sql);
+                stmt.setInt(1,m_idx);
+                stmt.setInt(2,s_idx);
+                rs = stmt.executeQuery();
+                stmt.executeUpdate(sql);
+                DeleteTodoDTO.setM_idx(m_idx);
+                DeleteTodoDTO.setS_idx(s_idx);
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -68,11 +78,11 @@ public class DeleteTodoDAO {
                 // DB close 필수!
                 // 접속이 된 것
                 try {
-                    if(connection != null) {
-                        connection.close();
+                    if(con != null) {
+                        con.close();
                     }
-                    if(pstmt != null) {
-                        pstmt.close();
+                    if(stmt != null) {
+                        stmt.close();
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();

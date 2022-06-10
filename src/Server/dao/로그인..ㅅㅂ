@@ -1,0 +1,95 @@
+package Server.dao;
+
+
+import Server.dto.LogInDTO;
+
+import java.sql.*;
+
+import static Server.dto.LogInDTO.setUser_id;
+import static java.lang.Boolean.TRUE;
+
+public class LogInDAO {
+    //쿼리문으로 인덱스에 해당하는 유저 id 찾아가지고 status변경하는 코드 짜야함.
+
+    public static void logindao(String UserID) throws SQLException {
+        Connection con = null;
+        String usernick = null;
+        PreparedStatement ps = null;
+        assert false;
+
+
+        String server = "127.0.0.1:3306"; // 서버 주소
+        String user_name = "newuser"; //  접속자 id
+        String password = "@123456789"; // 접속자 pw
+
+        // JDBC 드라이버 로드
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.err.println("JDBC 드라이버를 로드하는데에 문제 발생" + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // 접속
+        try {
+            con = DriverManager.getConnection("jdbc:mysql://" + server + "/project_table", user_name, password);
+
+            System.out.println("연결 완료!");
+        } catch (SQLException e) {
+            System.err.println("연결 오류" + e.getMessage());
+            e.printStackTrace();
+        }
+
+        Statement st = con.createStatement();
+        String user_nick = null;
+        //user_id 행의 열 값중 user_id와 일치하는것을 찾고, 그것과 같은 행의 status값 변경
+
+        String sql = "UPDATE user_table SET status = ? WHERE user_id LIKE ? ";
+        String sql2 = "SELECT user_nick FROM user_table WHERE user_id LIKE ?";
+
+        ResultSet rs = st.executeQuery(sql);
+
+        try {
+
+            ps = con.prepareStatement(sql);
+            int update = st.executeUpdate(sql);
+
+            ps.setBoolean(1, TRUE);
+            ps.setString(2, UserID);
+            setUser_id(UserID);
+
+//
+            ps = con.prepareStatement(sql2);
+            ps.setString(1, UserID);
+            rs = st.executeQuery(sql2);
+            while (rs.next()) {
+                user_nick = rs.getString("user_nick");
+                System.out.println(usernick + " 유저이름..출력좀해봐"+update);
+
+            }
+            int count2 = ps.executeUpdate(sql2);
+            System.out.println("count: "+count2);
+            LogInDTO.setUser_nick(user_nick);
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // DB close 필수!
+            // 접속이 된 것
+            try {
+                if (rs != null) rs.close();
+                else if (ps != null) ps.close();
+                else if (con != null) {
+                    con.close(); //conn = .getConnection();
+                }
+            } catch (Exception e) {
+                System.out.println("dbclose Failed!");
+            }
+        }
+
+    }
+
+
+
+}

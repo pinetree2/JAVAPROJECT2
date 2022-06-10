@@ -3,20 +3,24 @@ package Server.dao;
 import Server.dto.Database;
 import Server.dto.Sub_CheckDTO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import static java.lang.Boolean.TRUE;
 
 public class Sub_CheckDAO {
-    static Database db = new Database();
-    private static Connection connection= db.con;
-    private static PreparedStatement pstmt;
-    private ResultSet rs;
+
 
     public static void Sub_Check(int idx,int Chat_index, int Main_index,String check) {
+
+        Connection con = null;
+
+        String url = "127.0.0.1:3306"; // 서버 주소
+        String user_name = "newuser"; //  접속자 id
+        String password = "@123456789"; // 접속자 pw
+        PreparedStatement stmt =null;
+        // Statement statement = null;
+        ResultSet rs = null;
+
 
         Sub_CheckDTO sub_checkDTO;
         sub_checkDTO = new Sub_CheckDTO();
@@ -29,27 +33,27 @@ public class Sub_CheckDAO {
 
         String sql = "UPDATE chatmainsub SET S_check ="+ Check +"WHERE (M_idx  REGEXP '^["+ Mainindex+"]+$') AND (Chat_index REGEXP '^["+Chatindex+"]+$') AND (S_idx REGEXP '^["+Subindex+"]+$' )";
         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://" + url + "/project_table?serverTimezone=UTC", user_name, password);
+            System.out.println("Connect Success!");
+            stmt = con.prepareStatement(sql);
+            stmt.executeUpdate();
 
-            pstmt = connection.prepareStatement(sql);
-            ResultSet rs = pstmt.executeQuery();
-            int result = pstmt.executeUpdate();
-            if(result == 1){
-                System.out.println("서브 check 값 변경완료");
-            }else {
-                System.out.println("서브 check 값 변경실패");
-            }
+            sub_checkDTO.setSubindex(idx);
+            sub_checkDTO.setMainindex(Mainindex);
+            sub_checkDTO.setChatindex(Chatindex);
 
-        } catch (SQLException e) {
+        } catch (ClassNotFoundException|SQLException e) {
             e.printStackTrace();
         } finally {
             // DB close 필수!
             // 접속이 된 것
             try {
-                if (connection != null) {
-                    connection.close();
+                if (con != null) {
+                    con.close();
                 }
-                if (pstmt != null) {
-                    pstmt.close();
+                if (stmt != null) {
+                    stmt.close();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

@@ -3,49 +3,36 @@ package Server;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-
-public class TCPServer {
+//import Server.User;
+//import Server.Room;
+public class TCPServer implements Runnable{
     public static final int PORT = 7777;
     Vector<User> Userlist;
     Vector<User> MainUser;
-    Vector<Room> Chatroom;
-    public static void main(String[] args) {
-        ServerSocket serverSocket = null;
-        TCPServer server = new TCPServer();
-        server.Userlist = new Vector<>();
-        server.MainUser = new Vector<>();
-        server.Chatroom = new Vector<>();
-
-        try {
-// 1. ì„œë²„ ì†Œì¼“ ìƒì„±
-            serverSocket = new ServerSocket();
-
-// 2. ë°”ì¸ë”©
-            String hostAddress = InetAddress.getLocalHost().getHostAddress();
-            serverSocket.bind( new InetSocketAddress(hostAddress, PORT) );
-            consoleLog("ì—°ê²° ê¸°ë‹¤ë¦¼ - " + hostAddress + ":" + PORT);
-
-// 3. ìš”ì²­ ëŒ€ê¸°
-            while(true) {
-                Socket socket = serverSocket.accept();
-                User c = new User(socket, server);
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                if( serverSocket != null && !serverSocket.isClosed()) {
-                    serverSocket.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    Vector<Room> Chatroom; 
+    
+    public TCPServer() {
+        Userlist = new Vector<>();
+        MainUser = new Vector<>();
+        Chatroom = new Vector<>();
+        new Thread(this).start();
     }
-
-    private static void consoleLog(String log) {
-        System.out.println("[server " + Thread.currentThread().getId() + "] " + log);
+    @Override
+    public void run() {
+    	try {
+    		ServerSocket socket = new ServerSocket(PORT);
+    		System.out.println("Start Server......");
+    		while(true) {
+    			Socket s = socket.accept();
+    			User c = new User(s, this);
+//    			c.start();
+    		}
+    	}catch(IOException e) {
+    		e.printStackTrace();
+    		System.out.println("[Server] ¼­¹ö ¼ÒÄÏ ¿À·ù > " + e.toString());
+    	}
+    }
+    public static void main(String[] args) {
+    	new TCPServer();
     }
 }

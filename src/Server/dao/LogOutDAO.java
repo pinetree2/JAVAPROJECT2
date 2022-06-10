@@ -3,10 +3,7 @@ package Server.dao;
 import Server.dto.Database;
 import Server.dto.LogOutDTO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import static java.lang.Boolean.FALSE;
 
@@ -15,41 +12,51 @@ public class LogOutDAO {
 
     //쿼리문으로 인덱스에 해당하는 유저 id 찾아가지고 status변경하는 코드 짜야함.
 
-    static Database db = new Database();
-    private static Connection connection= db.con;
-    private static PreparedStatement pstmt;
-    private ResultSet rs;
+
 
 
     public static void logoutdao(String UserID){
+
+        Connection con = null;
+
+        String url = "127.0.0.1:3306"; // 서버 주소
+        String user_name = "newuser"; //  접속자 id
+        String password = "@123456789"; // 접속자 pw
+        PreparedStatement stmt =null;
+        // Statement statement = null;
+        ResultSet rs = null;
+
+
         LogOutDTO logOutDTO;
         logOutDTO = new LogOutDTO();
 
         //user_id 행의 열 값중 user_id와 일치하는것을 찾고, 그것과 같은 행의 status값 변경
 
-        String sql ="UPDATE user_table SET status = "+FALSE+"WHERE user_id LIKE "+UserID;
+
 
         try {
-
-            pstmt = connection.prepareStatement(sql);
-            ResultSet rs = pstmt.executeQuery();
-            pstmt.executeUpdate(sql);
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://" + url + "/project_table?serverTimezone=UTC", user_name, password);
+            System.out.println("Connect Success!");
+            String sql ="UPDATE user_table SET status = "+FALSE+"WHERE user_id LIKE "+UserID;
+            stmt = con.prepareStatement(sql);
+            stmt.executeUpdate();
 
             LogOutDTO.setUser_id(UserID);
 
 
 
-        } catch (SQLException e) {
+        } catch (ClassNotFoundException|SQLException e) {
             e.printStackTrace();
         }finally {
             // DB close 필수!
             // 접속이 된 것
             try {
-                if(connection != null) {
-                    connection.close();
+                if(con != null) {
+                    con.close();
                 }
-                if(pstmt != null) {
-                    pstmt.close();
+                if(stmt != null) {
+                    stmt.close();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

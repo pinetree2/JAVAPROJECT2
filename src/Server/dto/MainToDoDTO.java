@@ -3,7 +3,7 @@ package Server.dto;
 import java.util.Date;
 
 public class MainToDoDTO {
-    private String Mainindex; //메인 인덱스
+    private int Mainindex; //메인 인덱스
     private String MainTask; //메인 태스크
     private Date MainDate; //메인 데드라인
     private int Chat_index; //메인에 해당하는 채팅방인덱스
@@ -12,7 +12,7 @@ public class MainToDoDTO {
     public MainToDoDTO(){
 
     }
-    public MainToDoDTO(String Mainindex, String MainTask, Date MainDate, int Chat_index){
+    public MainToDoDTO(int Mainindex, String MainTask, Date MainDate, int Chat_index){
         this.Chat_index = Chat_index;
         this.MainDate = MainDate;
         this.Mainindex = Mainindex;
@@ -20,11 +20,11 @@ public class MainToDoDTO {
 
     }
 
-    public String getMainindex() {
+    public int getMainindex() {
         return Mainindex;
     }
 
-    public void setMainindex(String mainindex) {
+    public void setMainindex(int mainindex) {
         Mainindex = mainindex;
     }
 
